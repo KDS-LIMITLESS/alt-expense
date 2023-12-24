@@ -1,22 +1,29 @@
 # type: ignore
-import datetime
+from datetime import datetime, timezone
+import uuid
+import pytz
 from typing import  Dict, Union
+
+dt = datetime.now(timezone.utc) 
+  
+utc_time = dt.replace(tzinfo=timezone.utc) 
+utc_timestamp = utc_time.timestamp() 
   
 class Expense:
-  def __init__(self, expense_id: int, title: str, amount: int):
-    self.expense_id = expense_id
+  def __init__(self, title: str, amount: float):
+    self.expense_id = uuid.uuid4().int
     self.title = title
     self.amount = amount
-    self.created_at = datetime.datetime.now()
-    self.updated_at = datetime.datetime.now()
+    self.created_at = utc_timestamp
+    self.updated_at = utc_timestamp
 
-  def update(self, title: str, amount: int):
+  def update(self, title: str, amount: float):
     self.title = title
     self.amount = amount
-    self.updated_at = datetime.datetime.now()
-    return self.to_dict()
+    self.updated_at = utc_timestamp
+    return self
 
-  def to_dict(self) -> Dict[str, Union[int, str, datetime.datetime]]:
+  def to_dict(self) -> Dict[str, Union[int, str, datetime]]:
     return {
       "expense_id": self.expense_id,
       "title": self.title,
@@ -26,7 +33,7 @@ class Expense:
     }
   
   def __str__(self):
-    return f"Expense ID: {self.expense_id}, Title: {self.title}, Amount: {self.amount}"
+    return f"Expense ID: {self.expense_id}, Title: {self.title}, Amount: {self.amount}, Updated_At: {self.updated_at}"
   
 
 
@@ -72,21 +79,22 @@ class ExpenseDatabase:
 expense_db = ExpenseDatabase()
 
 # Initialize expense items
-expense_1 = Expense(1, "Testing Expense", 3000)
-expense_2 = Expense(2, "Testing 2", 4000)
+expense_1 = Expense("Testing Expense", 3000.0)
+expense_2 = Expense("Testing 2", 4000.0)
 
 # Save expense data to database
 expense_db.add_expense(expense_1)
-expense_db.add_expense(expense_2)
-
-# Expense database methods 
-
-# print(expense_db.remove_expense(1))
-# print(expense_db.get_expense(2))
-# print(expense_db.get_expense_by_title("Testing Expense"))
-# print(expense_db.to_dict())
+expense_db.add_expense(expense_2) 
 
 # Expense class methods
 
-# print(expense_1.update("Updating expense 1", 3000))
-# print(expense_2.to_dict())
+print(expense_1.update("Updating expense 1", 3000.0))
+print(expense_2.to_dict())
+
+
+# Expense database methods 
+
+print(expense_db.remove_expense(1))
+print(expense_db.get_expense(317207130060184451509440739815726307525))
+print(expense_db.get_expense_by_title("Testing Expense"))
+print(expense_db.to_dict())
